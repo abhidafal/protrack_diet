@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProTrack Ultimate — AI Nutrition Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=JetBrains+Mono:wght@400;500;700&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0a0a; --bgE:#131313; --card:#181818; --input:#1f1f1f;
+    --bd:rgba(255,255,255,0.08); --bdS:rgba(255,255,255,0.15);
+    --tx:#f5f1e8; --dim:#a8a59c; --mu:#6e6b62;
+    --moss:#7fa05c; --ochre:#d4a574; --clay:#c97b5c; --rust:#b85450;
+    --indigo:#6b7fb5; --amethyst:#9577b3; --saffron:#d9a441; --sage:#8ab09a; --gold:#e4b853;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);min-height:100vh;color:var(--tx);font-family:'Inter Tight',system-ui,sans-serif;padding-bottom:100px}
+  input::placeholder,textarea::placeholder{color:var(--mu)}
+  input:focus,select:focus,textarea:focus{border-color:var(--ochre)!important;outline:none}
+  ::-webkit-scrollbar{width:6px;height:6px}
+  ::-webkit-scrollbar-thumb{background:var(--bdS);border-radius:3px}
+  @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+  @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+  .wrap{max-width:1280px;margin:0 auto;padding:24px 18px 0}
+  .card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:22px}
+  .inp{width:100%;background:var(--input);border:1px solid var(--bd);border-radius:8px;padding:11px 14px;color:var(--tx);font-family:inherit;font-size:15px;outline:none}
+  .lbl{display:block;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--mu);margin-bottom:7px;font-weight:600}
+  .serif{font-family:'Fraunces',serif}
+  .mono{font-family:'JetBrains Mono',monospace}
+  .sec-title{font-family:'Fraunces',serif;font-weight:500;font-size:20px;margin-bottom:4px;letter-spacing:-0.01em}
+  .sec-sub{font-size:12px;color:var(--mu);margin-bottom:18px}
+  .card-eyebrow{font-size:12px;color:var(--mu);letter-spacing:0.04em;text-transform:uppercase;font-weight:500;margin-bottom:18px}
+
+  .btn{padding:10px 16px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.18s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+  .btn:disabled{cursor:not-allowed;opacity:0.5}
+  .btn-primary{background:var(--tx);color:var(--bg);border-color:var(--tx)}
+  .btn-accent{background:var(--ochre);color:#0a0a0a;border-color:var(--ochre)}
+  .btn-ghost{background:none;border:none;color:var(--mu);cursor:pointer;padding:4px 6px;font-size:13px}
+
+  .pill{padding:8px 14px;border-radius:99px;border:1px solid var(--bd);background:var(--card);color:var(--dim);cursor:pointer;font-family:inherit;font-size:13px;font-weight:500;transition:all 0.18s}
+  .pill.on{border-color:var(--tx);background:var(--tx);color:var(--bg)}
+
+  .stat{padding:14px 16px;background:var(--input);border-radius:8px}
+  .stat-l{font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--mu);margin-bottom:4px;font-weight:600}
+  .stat-v{font-family:'Fraunces',serif;font-size:26px;font-weight:500;letter-spacing:-0.02em;line-height:1}
+  .stat-u{font-size:12px;color:var(--mu);margin-left:3px}
+  .stat-d{font-size:11px;color:var(--dim);margin-top:5px}
+
+  .grid12{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;animation:fi 0.4s ease}
+  .sp4{grid-column:span 4;min-width:0} .sp6{grid-column:span 6;min-width:0}
+  .sp8{grid-column:span 8;min-width:0} .sp12{grid-column:span 12;min-width:0}
+  @media (max-width:900px){.sp4,.sp6,.sp8{grid-column:span 12}}
+
+  .tabbtn{padding:11px 16px;background:transparent;border:none;color:var(--mu);font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+  .tabbtn.on{color:var(--tx);border-bottom-color:var(--ochre)}
+
+  .insight{padding:10px 14px;border-radius:8px;margin-bottom:8px;display:flex;gap:10px;font-size:13px;line-height:1.5}
+  .insight.good{border-left:3px solid var(--moss);background:rgba(127,160,92,0.06)}
+  .insight.warn{border-left:3px solid var(--clay);background:rgba(201,123,92,0.06)}
+  .insight.alert{border-left:3px solid var(--rust);background:rgba(184,84,80,0.08)}
+
+  #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--tx);color:var(--bg);padding:12px 20px;border-radius:99px;font-size:13px;font-weight:600;box-shadow:0 8px 32px rgba(0,0,0,0.35);transition:transform 0.35s cubic-bezier(.4,0,.2,1);z-index:1000;max-width:90vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+  #toast.show{transform:translateX(-50%) translateY(0)}
+
+  #modalOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:500;display:none;align-items:center;justify-content:center;padding:16px}
+  #modalOverlay.show{display:flex}
+  .modal{background:var(--card);border:1px solid var(--bdS);border-radius:14px;padding:22px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+
+  .keyrow{background:rgba(107,127,181,0.06);border:1px solid rgba(107,127,181,0.2);border-radius:8px;padding:12px 14px;margin-bottom:14px}
+  .spinner{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin 0.7s linear infinite}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;padding-bottom:22px;margin-bottom:20px;border-bottom:1px solid var(--bd)">
+    <div style="display:flex;align-items:flex-start;gap:14px">
+      <div style="width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,#7fa05c,#5a7a42);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🌿</div>
+      <div>
+        <h1 class="serif" style="font-weight:500;font-size:clamp(24px,4vw,32px);letter-spacing:-0.02em;margin:0;line-height:1">
+          ProTrack <span style="font-style:italic;color:var(--ochre);font-weight:400">Ultimate</span>
+        </h1>
+        <div style="font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--mu);margin-top:6px;font-weight:500">AI Nutrition Intelligence</div>
+        <div style="display:inline-flex;align-items:center;gap:5px;margin-top:7px;background:rgba(107,127,181,0.08);border:1px solid rgba(107,127,181,0.25);border-radius:99px;padding:3px 10px;font-size:10px;font-weight:600;color:var(--indigo)">
+          <div style="width:5px;height:5px;background:var(--indigo);border-radius:50%;animation:pulse 2s infinite"></div>Powered by Gemini
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+        <button class="btn btn-accent" onclick="handleSave()">💾 Save Data</button>
+        <button class="btn" onclick="openModal()">⬆ Restore</button>
+      </div>
+      <div class="mono" style="display:flex;gap:12px;align-items:center;font-size:11px;color:var(--dim)">
+        <span id="savedStatus" style="color:var(--moss)">✓ saved</span>
+        <span>⟲ <span id="backupTime">not yet</span></span>
+      </div>
+    </div>
+  </header>
+
+  <div id="tabbar" style="display:flex;gap:4px;margin-bottom:22px;overflow-x:auto;padding-bottom:2px;border-bottom:1px solid var(--bd);scrollbar-width:none"></div>
+
+  <div id="content"></div>
+</div>
+
+<div id="modalOverlay" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()" id="modalBody"></div>
+</div>
+
+<div id="toast"></div>
+<script>
+/* ════════ CONSTANTS ════════ */
+const HYDRO = {
+  water:1.00, coffee:0.95, espresso:0.95, tea:0.95, green_tea:0.95, black_tea:0.95,
+  milk:0.90, almond_milk:1.00, soy_milk:0.95, oat_milk:0.93,
+  juice:0.88, soda:0.85, cola:0.85, sports_drink:0.94, coconut_water:0.95,
+  energy_drink:0.80, beer:0.00, wine:0.00, alcohol:0.00, smoothie:0.88, default:0.90
+};
+const RDA = {
+  vitc:{label:"Vitamin C",unit:"mg",rda:90,e:"🍊"}, vitd:{label:"Vitamin D",unit:"IU",rda:600,e:"☀️"},
+  vita:{label:"Vitamin A",unit:"mcg",rda:900,e:"🥕"}, b12:{label:"Vitamin B12",unit:"mcg",rda:2.4,e:"🥩"},
+  fol:{label:"Folate",unit:"mcg",rda:400,e:"🥬"}, iron:{label:"Iron",unit:"mg",rda:18,e:"🩸"},
+  cal:{label:"Calcium",unit:"mg",rda:1000,e:"🥛"}, mag:{label:"Magnesium",unit:"mg",rda:400,e:"🥜"},
+  zn:{label:"Zinc",unit:"mg",rda:11,e:"🦪"}, pot:{label:"Potassium",unit:"mg",rda:3500,e:"🍌"},
+  vitk:{label:"Vitamin K",unit:"mcg",rda:120,e:"🥦"}, b6:{label:"Vitamin B6",unit:"mg",rda:1.3,e:"🍠"},
+  fib:{label:"Fiber",unit:"g",rda:30,e:"🌾"},
+};
+const MEALS = [
+  {key:"breakfast",name:"Breakfast",emoji:"🌅"},
+  {key:"lunch",name:"Lunch",emoji:"☀️"},
+  {key:"dinner",name:"Dinner",emoji:"🌙"},
+  {key:"snacks",name:"Snacks",emoji:"🍎"},
+];
+const C = {
+  bg:"#0a0a0a", card:"#181818", input:"#1f1f1f", bd:"rgba(255,255,255,0.08)",
+  tx:"#f5f1e8", dim:"#a8a59c", mu:"#6e6b62",
+  moss:"#7fa05c", ochre:"#d4a574", clay:"#c97b5c", rust:"#b85450",
+  indigo:"#6b7fb5", amethyst:"#9577b3", saffron:"#d9a441", sage:"#8ab09a", gold:"#e4b853",
+};
+
+/* ════════ PURE COMPUTE ════════ */
+const getKg = (w,u) => { const n=parseFloat(w); if(!n||n<=0) return null; return u==="lb" ? n*0.4536 : n; };
+const computeBMI = (kg,h) => { const hN=parseFloat(h); if(!kg||!hN) return null; return +(kg/Math.pow(hN/100,2)).toFixed(1); };
+const bmiCat = b => !b ? {l:"—",c:C.mu} : b<18.5?{l:"Underweight",c:C.indigo} : b<25?{l:"Healthy Range",c:C.moss} : b<30?{l:"Overweight",c:C.ochre} : {l:"Obese",c:C.rust};
+const computeBMR = (kg,h,age,sex) => { const hN=parseFloat(h),aN=parseFloat(age); if(!kg||!hN||!aN)return null; const b=(10*kg)+(6.25*hN)-(5*aN); return Math.round(sex==="f"?b-161:b+5); };
+const computeTDEE = (bmr,a) => bmr ? Math.round(bmr*a) : null;
+const computeCalTarget = (tdee,g) => {
+  if(!tdee) return null;
+  if(g==="shred-agg") return Math.max(1200, tdee-750);
+  if(g==="shred") return Math.max(1200, tdee-400);
+  if(g==="gain") return tdee+250;
+  if(g==="bulk") return tdee+500;
+  return tdee;
+};
+const computeMacros = (kg,cal,g) => {
+  if(!kg||!cal) return null;
+  let pKg,fKg;
+  if(g==="shred-agg"){pKg=2.4;fKg=0.8;}
+  else if(g==="shred"){pKg=2.2;fKg=0.9;}
+  else if(g==="maintain"){pKg=1.8;fKg=1.0;}
+  else if(g==="gain"){pKg=1.8;fKg=1.0;}
+  else if(g==="bulk"){pKg=1.6;fKg=1.0;}
+  else {pKg=1.8;fKg=1.0;}
+  const prot=Math.round(kg*pKg), fat=Math.round(kg*fKg);
+  const carb=Math.max(50, Math.round((cal-prot*4-fat*9)/4));
+  return {cal, protein:prot, carbs:carb, fat};
+};
+const computeWater = (kg,active) => kg ? Math.round(kg*(active?45:35)) : null;
+const todayKey = () => { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
+const emptyDay = () => ({meals:{breakfast:[],lunch:[],dinner:[],snacks:[]}, water:[]});
+
+const totalsForDay = (day) => {
+  const t = {cal:0,protein:0,carbs:0,fat:0,fiber:0,sugar:0,sodium:0,satfat:0,caff:0,water:0,micros:{}};
+  const items = [...day.meals.breakfast,...day.meals.lunch,...day.meals.dinner,...day.meals.snacks];
+  items.forEach(i => {
+    t.cal+=i.cal||0; t.protein+=i.protein||0; t.carbs+=i.carbs||0; t.fat+=i.fat||0;
+    t.fiber+=i.fiber||0; t.sugar+=i.sugar||0; t.sodium+=i.sodium||0; t.satfat+=i.satfat||0; t.caff+=i.caff||0;
+    if(i.is_liquid && i.liquid_ml){
+      const coeff = HYDRO[i.hydration_type] ?? HYDRO.default;
+      t.water += i.liquid_ml*coeff;
+    }
+    Object.entries(i.micros||{}).forEach(([k,v]) => { t.micros[k]=(t.micros[k]||0)+(v||0); });
+  });
+  day.water.forEach(w => { t.water += w.ml; });
+  t.micros.fib = t.fiber;
+  Object.keys(t).forEach(k => { if(typeof t[k]==='number') t[k]=Math.round(t[k]*10)/10; });
+  t.cal=Math.round(t.cal); t.water=Math.round(t.water); t.sodium=Math.round(t.sodium); t.caff=Math.round(t.caff);
+  return t;
+};
+
+const last7Days = () => { const o=[]; for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);o.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`);} return o; };
+
+const computeScore = (totals,targets,waterT) => {
+  if(!targets) return {overall:null,macros:null,hydro:null,micros:null};
+  const pR = targets.protein>0 ? Math.min(totals.protein/targets.protein,1.2) : 0;
+  const pS = 100 - Math.abs(1-pR)*100;
+  const cR = targets.cal>0 ? totals.cal/targets.cal : 0;
+  const cS = 100 - Math.abs(1-cR)*80;
+  const fR = targets.fat>0 ? Math.min(totals.fat/targets.fat,1.4) : 1;
+  const fS = 100 - Math.abs(1-fR)*60;
+  const mS = Math.round(Math.max(0, pS*0.5 + cS*0.3 + fS*0.2));
+  const hS = waterT ? Math.min(100, Math.round((totals.water/waterT)*100)) : 0;
+  const mks = ['vitc','vitd','iron','cal','mag','zn','pot','fib'];
+  let hit=0;
+  mks.forEach(k => { const v = k==='fib' ? totals.fiber : (totals.micros?.[k]||0); if(v/RDA[k].rda >= 0.8) hit++; });
+  const miS = Math.round((hit/mks.length)*100);
+  const ov = Math.round(mS*0.45 + hS*0.25 + miS*0.30);
+  return {overall:Math.min(100,Math.max(0,ov)), macros:mS, hydro:hS, micros:miS};
+};
+
+const scoreGrade = s => {
+  if(s===null) return {text:"LOG TO SCORE", bg:C.input, c:C.mu};
+  if(s>=85) return {text:"EXCELLENT", bg:C.moss, c:"#0a3a0a"};
+  if(s>=70) return {text:"STRONG", bg:C.gold, c:"#0a0a0a"};
+  if(s>=50) return {text:"DEVELOPING", bg:C.ochre, c:"#0a0a0a"};
+  if(s>=30) return {text:"NEEDS WORK", bg:C.clay, c:"#fff"};
+  return {text:"LOW", bg:C.rust, c:"#fff"};
+};
+
+const esc = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+
+const generateInsights = (day,totals,targets) => {
+  const ins=[];
+  const items=[...day.meals.breakfast,...day.meals.lunch,...day.meals.dinner,...day.meals.snacks];
+  if(items.length===0) return ins;
+  const seen=new Set();
+  items.forEach(i => {
+    if(seen.has(i.name)) return;
+    seen.add(i.name);
+    (i.highlights||[]).forEach(h => {
+      const lc=h.toLowerCase();
+      let type="good", icon="✦";
+      if(lc.includes("protein")) icon="💪";
+      else if(lc.includes("vitamin c")) icon="🍊";
+      else if(lc.includes("fiber")) icon="🌾";
+      else if(lc.includes("iron")) icon="🩸";
+      else if(lc.includes("omega")) icon="🐟";
+      else if(lc.includes("probiotic")) icon="🦠";
+      else if(lc.includes("antioxidant")) icon="🫐";
+      else if(lc.includes("calcium")) icon="🥛";
+      else if(lc.includes("healthy fat")||lc.includes("mono")) icon="🥑";
+      else if(lc.includes("sodium")||lc.includes("salt")){icon="🧂";type="warn";}
+      else if(lc.includes("sugar")){icon="🍬";type="warn";}
+      ins.push({type, icon, text:`<b>${esc(i.name)}</b> — ${esc(h)}`});
+    });
+  });
+  if(targets && totals.protein < targets.protein*0.5 && totals.cal > targets.cal*0.5)
+    ins.push({type:"warn",icon:"⚠️",text:`Protein (${Math.round(totals.protein)}g) is well below your <b>${targets.protein}g target</b>.`});
+  if(totals.sodium>2300) ins.push({type:"warn",icon:"🧂",text:`Sodium ${Math.round(totals.sodium)}mg exceeds the <b>2300mg limit</b>.`});
+  if(totals.sugar>50) ins.push({type:"warn",icon:"🍬",text:`Added sugars ${Math.round(totals.sugar)}g exceed <b>WHO 50g guideline</b>.`});
+  if(totals.satfat>22) ins.push({type:"warn",icon:"🧈",text:`Saturated fat ${Math.round(totals.satfat)}g exceeds AHA's ~22g/day.`});
+  if(totals.fiber<15 && items.length>=3) ins.push({type:"warn",icon:"🌾",text:`Fiber low (${Math.round(totals.fiber)}g / 30g). Add legumes, berries, or whole grains.`});
+  if(totals.caff>=400) ins.push({type:"alert",icon:"☕",text:`Caffeine at <b>400mg safe daily limit</b>.`});
+  else if(totals.caff>=300) ins.push({type:"warn",icon:"☕",text:`Caffeine ${totals.caff}mg — ${400-totals.caff}mg to limit.`});
+  return ins;
+};
+
+const generateAdvice = (totals,score,targets,waterT) => {
+  if(!targets) return {title:"Set up your profile", text:"Enter weight, height, age, and goal on the <b>Profile</b> tab to unlock personalized targets."};
+  const hour=new Date().getHours();
+  const tod = hour<11?"morning":hour<14?"midday":hour<18?"afternoon":"evening";
+  if(score.overall===null || (totals.cal===0 && totals.water===0))
+    return {title:`Good ${tod}`, text:`Target today: <b>${targets.cal} kcal · ${targets.protein}g P · ${targets.carbs}g C · ${targets.fat}g F</b>. Start logging.`};
+  const pL=targets.protein-totals.protein;
+  const cL=targets.cal-totals.cal;
+  if(pL>40 && hour>=14) return {title:"Protein gap", text:`<b>${Math.round(pL)}g short on protein</b>. Consider Greek yogurt, eggs, or a protein shake.`};
+  if(cL<0) return {title:"Calorie target exceeded", text:`${Math.abs(cL)} kcal over. If training today, surplus may aid recovery.`};
+  if(score.hydro<60 && hour>=12 && waterT) return {title:"Hydration lagging", text:`${totals.water}ml of ${waterT}ml — <b>${waterT-totals.water}ml to go</b>.`};
+  if(score.overall>=80) return {title:"Outstanding day", text:`Score ${score.overall}/100 — macros, hydration, micros all dialed in.`};
+  if(score.micros<40) return {title:"Micronutrient focus", text:"Add leafy greens or colorful vegetables."};
+  return {title:"On track", text:`${Math.round(cL)} kcal and ${Math.max(0,Math.round(pL))}g protein remaining.`};
+};
+
+/* ════════ GEMINI LOOKUP ════════ */
+const GEMINI_MODEL = "gemini-2.5-flash";
+
+async function askGeminiForFood(desc, grams){
+  const key = (state.apiKey||"").trim();
+  if(!key) throw new Error("Add your Gemini API key first (field below)");
+  const prompt = `You are a precise nutrition analyst. Estimate complete nutritional profile for this item.
+
+User input: "${desc}"
+Quantity: ${grams > 0 ? grams + " grams" : "standard serving (estimate typical portion)"}
+
+Return ONLY valid JSON (no markdown, no code fences). All values for the ACTUAL quantity (not per 100g):
+
+{
+  "canonical_name": "<cleaned name, e.g. 'Rajma Chawal'>",
+  "display_grams": <number>,
+  "is_liquid": <true|false>,
+  "liquid_ml": <number>,
+  "hydration_type": "<water|coffee|tea|green_tea|milk|almond_milk|soy_milk|juice|soda|sports_drink|coconut_water|energy_drink|smoothie|beer|alcohol|default|null>",
+  "cal": <kcal>,
+  "protein_g": <n>, "carbs_g": <n>, "fat_g": <n>,
+  "fiber_g": <n>, "sugar_g": <n>, "sodium_mg": <n>, "satfat_g": <n>, "caffeine_mg": <n>,
+  "micros": {"vitc":<mg>,"vitd":<IU>,"vita":<mcg>,"b12":<mcg>,"fol":<mcg>,"iron":<mg>,"cal":<mg>,"mag":<mg>,"zn":<mg>,"pot":<mg>,"vitk":<mcg>,"b6":<mg>},
+  "highlights": ["<tag>","<tag>"],
+  "notes": "<one sentence>"
+}
+
+Portion examples: 2 boiled eggs ≈100g, 1 cup rice ≈160g, 1 medium orange ≈130g, 1 cup coffee ≈240ml, 1 roti ≈40g, 1 bowl dal ≈200g.
+Highlights: "High Protein", "Vitamin C Rich", "Iron Rich", "High Fiber", "Omega-3", "Probiotic", "Antioxidant-Rich", "Healthy Fats", "High Sodium", "Added Sugar".
+If unclear/not food: {"error":"reason"}. Always use 0 for nutrients not present.`;
+
+  const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`, {
+    method: "POST",
+    headers: {"Content-Type":"application/json", "x-goog-api-key": key},
+    body: JSON.stringify({
+      contents: [{parts:[{text:prompt}]}],
+      generationConfig: {temperature:0.2, responseMimeType:"application/json"}
+    }),
+  });
+  if(!resp.ok){
+    const err = await resp.json().catch(() => ({}));
+    const msg = err?.error?.message || `API error ${resp.status}`;
+    if(resp.status===400 && /API key/i.test(msg)) throw new Error("Invalid API key — check it and try again");
+    throw new Error(msg);
+  }
+  const data = await resp.json();
+  const text = (data?.candidates?.[0]?.content?.parts || []).map(p => p.text || "").join("");
+  if(!text) throw new Error("Empty response from Gemini");
+  const clean = text.replace(/```json|```/g,"").trim();
+  const parsed = JSON.parse(clean);
+  if(parsed.error) throw new Error(parsed.error);
+  return parsed;
+}
+
+/* ════════ STATE ════════ */
+const state = {
+  weight:"", unit:"kg", height:"", age:"", sex:"m", activity:1.375, goal:"maintain",
+  days:{[todayKey()]: emptyDay()}, currentMeal:"breakfast",
+  tab:"today", apiKey:"", showKey:false,
+  loading:false, loadingMsg:"",
+  hasUnsaved:false, lastBackup:null, backupJson:"",
+};
+let toastTimer=null, firstChange=true;
+
+/* API key persistence (works when opened as a local file; falls back to memory otherwise) */
+function loadApiKey(){ try{ const k=localStorage.getItem("protrack_gemini_key"); if(k) state.apiKey=k; }catch{} }
+function saveApiKey(){ try{ localStorage.setItem("protrack_gemini_key", state.apiKey); }catch{} }
+
+function derived(){
+  const kg = getKg(state.weight, state.unit);
+  const bmi = computeBMI(kg, state.height);
+  const bmiC = bmiCat(bmi);
+  const bmr = computeBMR(kg, state.height, state.age, state.sex);
+  const tdee = computeTDEE(bmr, state.activity);
+  const calTarget = computeCalTarget(tdee, state.goal);
+  const macros = computeMacros(kg, calTarget, state.goal);
+  const waterT = computeWater(kg, false);
+  const waterTA = computeWater(kg, true);
+  const today = state.days[todayKey()] || emptyDay();
+  const totals = totalsForDay(today);
+  const score = computeScore(totals, macros, waterT);
+  return {kg,bmi,bmiC,bmr,tdee,calTarget,macros,waterT,waterTA,today,totals,score};
+}
+
+function markUnsaved(){
+  if(firstChange){ firstChange=false; }
+  state.hasUnsaved=true;
+  updateHeaderStatus();
+}
+function updateHeaderStatus(){
+  const el=document.getElementById("savedStatus");
+  el.textContent = state.hasUnsaved ? "● unsaved" : "✓ saved";
+  el.style.color = state.hasUnsaved ? C.ochre : C.moss;
+}
+function updateBackupTime(){
+  const el=document.getElementById("backupTime");
+  if(!state.lastBackup){ el.textContent="not yet"; return; }
+  const diff=Math.floor((Date.now()-state.lastBackup)/1000);
+  el.textContent = diff<5?"just now" : diff<60?`${diff}s ago` : diff<3600?`${Math.floor(diff/60)}m ago` : `${Math.floor(diff/3600)}h ago`;
+}
+setInterval(updateBackupTime, 15000);
+
+function showToast(m){
+  const t=document.getElementById("toast");
+  t.textContent=m; t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove("show"), 3000);
+}
+
+/* ════════ BACKUP / RESTORE ════════ */
+function snapshot(){
+  return {
+    version:1, timestamp:Date.now(),
+    profile:{weight:state.weight,unit:state.unit,height:state.height,age:state.age,sex:state.sex,activity:state.activity,goal:state.goal},
+    days:state.days, preferences:{currentMeal:state.currentMeal},
+  };
+}
+function handleSave(){
+  const json = JSON.stringify(snapshot(), null, 2);
+  state.backupJson = json;
+  let ok=false;
+  try{
+    const blob=new Blob([json],{type:"application/json"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url; a.download=`protrack-backup-${todayKey()}.json`; a.style.display="none";
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{ try{document.body.removeChild(a);URL.revokeObjectURL(url);}catch{} },200);
+    ok=true;
+  }catch{ ok=false; }
+  state.lastBackup=Date.now();
+  state.hasUnsaved=false;
+  updateHeaderStatus(); updateBackupTime();
+  openModal();
+  showToast(ok ? "💾 Download started — copy below as backup" : "💾 Copy the JSON below to save");
+}
+function applyRestore(text){
+  try{
+    const d=JSON.parse(text);
+    if(d.profile){
+      state.weight=d.profile.weight??""; state.unit=d.profile.unit??"kg";
+      state.height=d.profile.height??""; state.age=d.profile.age??"";
+      state.sex=d.profile.sex??"m"; state.activity=d.profile.activity??1.375;
+      state.goal=d.profile.goal??"maintain";
+    }
+    if(d.days) state.days=d.days;
+    if(d.preferences?.currentMeal) state.currentMeal=d.preferences.currentMeal;
+    state.lastBackup=Date.now(); state.hasUnsaved=false;
+    updateHeaderStatus(); updateBackupTime();
+    showToast("✓ Data restored");
+    closeModal();
+    render();
+  }catch{ showToast("⚠ Invalid backup data"); }
+}
+function restoreFromFile(input){
+  const f=input.files?.[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload = ev => applyRestore(ev.target.result);
+  r.readAsText(f);
+  input.value="";
+}
+function restoreFromPaste(){
+  const v=document.getElementById("importText")?.value?.trim();
+  if(v) applyRestore(v); else showToast("Paste data first");
+}
+async function copyBackup(){
+  try{
+    await navigator.clipboard.writeText(state.backupJson);
+    showToast("📋 Copied to clipboard!");
+  }catch{
+    const ta=document.getElementById("backupTextarea");
+    if(ta){ ta.select(); try{document.execCommand("copy");showToast("📋 Copied!");}catch{showToast("Select text and copy manually");} }
+  }
+}
+function openModal(){
+  document.getElementById("modalBody").innerHTML = renderModal();
+  document.getElementById("modalOverlay").classList.add("show");
+}
+function closeModal(){ document.getElementById("modalOverlay").classList.remove("show"); }
+
+function renderModal(){
+  return `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;gap:12px">
+      <div>
+        <div class="serif" style="font-size:22px;font-weight:500;margin-bottom:4px">Backup &amp; Restore</div>
+        <div style="font-size:12px;color:var(--mu)">— Your safety net across sessions</div>
+      </div>
+      <button class="btn-ghost" style="font-size:20px" onclick="closeModal()">✕</button>
+    </div>
+    <div style="background:rgba(212,165,116,0.06);border:1px solid rgba(212,165,116,0.2);border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:var(--dim);line-height:1.6">
+      <b style="color:var(--ochre)">📱 On mobile?</b> Downloads might not work in the app. Use the <b>copy button</b> below and paste your data into a notes app or email to yourself.
+    </div>
+    ${state.backupJson ? `
+      <label class="lbl">Your Backup Data</label>
+      <textarea id="backupTextarea" readonly class="inp mono" style="min-height:160px;font-size:11px;resize:vertical" onclick="this.select()">${esc(state.backupJson)}</textarea>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <button class="btn btn-accent" onclick="copyBackup()">📋 Copy to Clipboard</button>
+        <button class="btn" onclick="handleSave()">⬇ Download Again</button>
+      </div>
+    ` : `
+      <div style="font-size:13px;color:var(--dim);margin-bottom:16px">Click <b>💾 Save Data</b> in the header to generate a backup first.</div>
+    `}
+    <div style="height:1px;background:var(--bd);margin:22px 0"></div>
+    <label class="lbl">Restore Data</label>
+    <div style="font-size:12px;color:var(--mu);margin-bottom:10px;line-height:1.6">Upload a backup file, OR paste backup JSON text below.</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="btn" onclick="document.getElementById('importFile').click()">📁 Choose File</button>
+      <input id="importFile" type="file" accept=".json,application/json,text/plain" onchange="restoreFromFile(this)" style="display:none">
+    </div>
+    <textarea id="importText" placeholder="…or paste backup JSON here" class="inp mono" style="min-height:100px;font-size:11px;resize:vertical"></textarea>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="btn btn-primary" onclick="restoreFromPaste()">⬆ Restore from Paste</button>
+    </div>`;
+}
+
+/* ════════ ACTIONS ════════ */
+function updateDay(fn){
+  const k=todayKey();
+  state.days[k] = fn(state.days[k] || emptyDay());
+  markUnsaved();
+}
+function setTab(t){ state.tab=t; render(); }
+function setMeal(m){ state.currentMeal=m; markUnsaved(); render(); }
+function setActivity(v){ state.activity=v; markUnsaved(); render(); }
+function setGoal(g){ state.goal=g; markUnsaved(); render(); }
+function onProfileInput(field, value){
+  state[field]=value; markUnsaved();
+  const panel=document.getElementById("targetsPanel");
+  if(panel) panel.innerHTML = renderTargetsInner();
+}
+function onApiKeyInput(value){ state.apiKey=value; saveApiKey(); }
+function toggleKeyVisibility(){
+  state.showKey=!state.showKey;
+  const i=document.getElementById("apiKeyInput");
+  const b=document.getElementById("keyToggleBtn");
+  if(i) i.type = state.showKey ? "text" : "password";
+  if(b) b.textContent = state.showKey ? "🙈 Hide" : "👁 Show";
+}
+
+async function addFood(){
+  const descEl=document.getElementById("foodDesc");
+  const gramsEl=document.getElementById("foodGrams");
+  const desc=(descEl?.value||"").trim();
+  if(!desc){ showToast("Describe what you ate or drank"); return; }
+  state.loading=true; state.loadingMsg="Gemini is analyzing nutrition…";
+  renderLogControls();
+  try{
+    const r = await askGeminiForFood(desc, parseFloat(gramsEl?.value)||0);
+    const entry = {
+      id: Date.now()+Math.random(),
+      name: r.canonical_name || desc,
+      grams: r.display_grams,
+      cal: Math.max(0, Math.round(r.cal||0)),
+      protein: Math.max(0, r.protein_g||0),
+      carbs: Math.max(0, r.carbs_g||0),
+      fat: Math.max(0, r.fat_g||0),
+      fiber: Math.max(0, r.fiber_g||0),
+      sugar: Math.max(0, r.sugar_g||0),
+      sodium: Math.max(0, r.sodium_mg||0),
+      satfat: Math.max(0, r.satfat_g||0),
+      caff: Math.max(0, r.caffeine_mg||0),
+      is_liquid: !!r.is_liquid,
+      liquid_ml: r.liquid_ml||0,
+      hydration_type: r.hydration_type||"default",
+      micros: r.micros||{},
+      highlights: r.highlights||[],
+      notes: r.notes||"",
+      ts: Date.now(),
+    };
+    updateDay(d => ({...d, meals:{...d.meals, [state.currentMeal]:[...(d.meals[state.currentMeal]||[]), entry]}}));
+    state.loading=false; state.loadingMsg="";
+    render();
+    let m=`+${entry.cal} kcal · +${Math.round(entry.protein)}g P`;
+    if(entry.caff>0) m+=` · ☕${entry.caff}mg`;
+    if(entry.highlights[0]) m+=` · ${entry.highlights[0]}`;
+    showToast(m);
+  }catch(e){
+    state.loading=false; state.loadingMsg="⚠ "+e.message;
+    renderLogControls();
+    showToast("Could not analyze");
+  }
+}
+function deleteFood(mealKey, id){
+  updateDay(d => ({...d, meals:{...d.meals, [mealKey]:d.meals[mealKey].filter(x => x.id !== id)}}));
+  render(); showToast("Removed");
+}
+function addWaterFromInput(){
+  const el=document.getElementById("waterInput");
+  const n=parseFloat(el?.value);
+  if(n>0){ addWater(n); if(el) el.value=""; }
+}
+function addWater(ml, label="manual"){
+  if(!ml||ml<=0) return;
+  updateDay(d => ({...d, water:[...d.water, {id:Date.now()+Math.random(), ml, label, time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}]}));
+  render(); showToast(`💧 +${ml}ml`);
+}
+function deleteWater(id){
+  updateDay(d => ({...d, water:d.water.filter(w => w.id !== id)}));
+  render(); showToast("Water removed");
+}
+function editWater(id){
+  const today = state.days[todayKey()] || emptyDay();
+  const e = today.water.find(w => w.id === id);
+  if(!e) return;
+  const nv = prompt("Edit amount (ml):", e.ml);
+  const n = parseFloat(nv);
+  if(n && n>0){
+    updateDay(d => ({...d, water:d.water.map(w => w.id===id ? {...w, ml:Math.round(n)} : w)}));
+    render(); showToast("Updated");
+  }
+}
+
+/* ════════ UI BUILDERS ════════ */
+function pillHtml(label, active, onclick, color){
+  const st = active && color ? `style="border-color:${color};background:${color};color:#0a0a0a"` : "";
+  return `<button class="pill${active&&!color?" on":""}" ${st} onclick="${onclick}">${label}</button>`;
+}
+function statHtml(label, value, unit, detail, color){
+  return `<div class="stat">
+    <div class="stat-l"${color?` style="color:${color}"`:""}>${label}</div>
+    <div class="stat-v"${color?` style="color:${color}"`:""}>${value}${unit?`<span class="stat-u">${unit}</span>`:""}</div>
+    ${detail?`<div class="stat-d">${detail}</div>`:""}
+  </div>`;
+}
+function macroRingHtml(label, val, goal, color, unit){
+  const r=28, circ=2*Math.PI*r;
+  const pct = goal>0 ? Math.min(val/goal,1) : 0;
+  return `<div style="text-align:center;padding:14px 8px;background:var(--input);border-radius:8px">
+    <svg viewBox="0 0 68 68" style="width:68px;height:68px;margin:0 auto 8px;display:block">
+      <circle cx="34" cy="34" r="${r}" fill="none" stroke="${C.bd}" stroke-width="6"/>
+      <circle cx="34" cy="34" r="${r}" fill="none" stroke="${color}" stroke-width="6"
+        stroke-linecap="round" stroke-dasharray="${circ*pct} ${circ}"
+        style="transform:rotate(-90deg);transform-origin:center;transition:stroke-dasharray 0.8s cubic-bezier(.4,0,.2,1)"/>
+    </svg>
+    <div class="serif" style="font-size:18px;font-weight:500">${val}</div>
+    <div style="font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:var(--mu);margin-top:3px;font-weight:600">${label}</div>
+    <div class="mono" style="font-size:10px;color:var(--mu);margin-top:2px">/ ${goal}${unit}</div>
+  </div>`;
+}
+function barHtml(label, val, goal, unit, color){
+  const pct = goal>0 ? Math.min((val/goal)*100,100) : 0;
+  return `<div style="margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+      <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500">
+        <div style="width:8px;height:8px;border-radius:50%;background:${color}"></div>${label}
+      </div>
+      <div class="mono" style="font-size:12px;font-weight:500;color:var(--dim)"><span style="color:var(--tx)">${val}</span> / ${goal}${unit}</div>
+    </div>
+    <div style="height:6px;background:var(--input);border-radius:99px;overflow:hidden">
+      <div style="height:100%;border-radius:99px;width:${pct}%;background:linear-gradient(90deg,${color},${color}cc);transition:width 0.8s cubic-bezier(.4,0,.2,1)"></div>
+    </div>
+  </div>`;
+}
+function trendChartSvg(keys, values, max, unit, color, target){
+  const w=720, h=180, pad=22, gap=6;
+  const cw=w-pad*2, ch=h-pad*2-14;
+  const bw=(cw-gap*(keys.length-1))/keys.length;
+  let out=`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="width:100%;height:180px;overflow:visible">`;
+  if(target){
+    const ty = pad+ch-(target/max*ch);
+    out+=`<line x1="${pad}" y1="${ty}" x2="${w-pad}" y2="${ty}" stroke="${C.mu}" stroke-width="1" stroke-dasharray="4 4"/>
+      <text x="${w-pad}" y="${ty-4}" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="${C.mu}">target ${target}${unit}</text>`;
+  }
+  keys.forEach((k,i) => {
+    const v=values[i];
+    const x=pad+i*(bw+gap);
+    const bH = v!=null && max ? (v/max*ch) : 0;
+    const y=pad+ch-bH;
+    const dn=new Date(k).toLocaleDateString("en-US",{weekday:"short"});
+    if(v!==null){
+      out+=`<rect x="${x}" y="${y}" width="${bw}" height="${bH}" rx="3" fill="${color}" opacity="${i===keys.length-1?1:0.7}"/>
+        <text x="${x+bw/2}" y="${y-3}" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="${C.dim}">${v}</text>`;
+    } else {
+      out+=`<rect x="${x}" y="${pad+ch-6}" width="${bw}" height="6" rx="3" fill="${C.bd}"/>`;
+    }
+    out+=`<text x="${x+bw/2}" y="${h-4}" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="${C.mu}">${dn}</text>`;
+  });
+  return out+"</svg>";
+}
+
+/* ════════ TAB: TODAY ════════ */
+function renderLogControls(){
+  const btn=document.getElementById("askBtn");
+  const msg=document.getElementById("loadingMsg");
+  if(btn){
+    btn.disabled=state.loading;
+    btn.innerHTML = state.loading ? `<span class="spinner"></span> Analyzing…` : "✦ Analyze with Gemini";
+  }
+  if(msg){
+    msg.textContent=state.loadingMsg;
+    msg.style.display = state.loadingMsg ? "block" : "none";
+  }
+}
+function renderToday(d){
+  const grade = scoreGrade(d.score.overall);
+  const advice = generateAdvice(d.totals, d.score, d.macros, d.waterT);
+  const sCirc=440;
+  const sOffset = d.score.overall!==null ? sCirc-(sCirc*d.score.overall/100) : sCirc;
+  const s=d.score.overall;
+  const sCol = s===null ? C.bd : s>=85?C.moss : s>=70?C.gold : s>=50?C.ochre : s>=30?C.clay : C.rust;
+  const keyMissing = !(state.apiKey||"").trim();
+
+  const mealsHtml = MEALS.map(m => {
+    const items = d.today.meals[m.key]||[];
+    const mt = items.reduce((t,i)=>({cal:t.cal+(i.cal||0), p:t.p+(i.protein||0)}), {cal:0,p:0});
+    const rows = items.length===0
+      ? `<div style="font-size:11px;color:var(--mu);font-style:italic;padding:6px 10px">No items</div>`
+      : items.map(i => `
+        <div style="padding:10px 12px;background:var(--input);border-radius:8px;margin-bottom:6px;animation:fi 0.3s">
+          <div style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-bottom:4px">
+            <div style="font-weight:500;font-size:13px;min-width:0">${esc(i.name)}<span class="mono" style="color:var(--mu);font-size:11px;margin-left:6px">${esc(i.grams)}g</span></div>
+            <button class="btn-ghost" onclick="deleteFood('${m.key}', ${i.id})">✕</button>
+          </div>
+          <div class="mono" style="display:flex;gap:10px;font-size:11px;color:var(--dim);flex-wrap:wrap">
+            <span style="color:var(--saffron);font-weight:600">${i.cal} kcal</span>
+            <span style="color:var(--mu)">·</span>
+            <span>P${Math.round(i.protein)} · C${Math.round(i.carbs)} · F${Math.round(i.fat)}</span>
+            ${i.caff>0?`<span style="color:var(--mu)">·</span><span style="color:var(--amethyst)">☕${i.caff}mg</span>`:""}
+          </div>
+          ${(i.highlights?.length>0)?`<div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:6px">${i.highlights.map(h=>`<span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px;background:rgba(138,176,154,0.1);border:1px solid rgba(138,176,154,0.25);color:var(--sage)">🧪 ${esc(h)}</span>`).join("")}</div>`:""}
+          ${i.notes?`<div style="font-size:10px;color:var(--mu);font-style:italic;margin-top:4px">${esc(i.notes)}</div>`:""}
+        </div>`).join("");
+    return `<div style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--bd);margin-bottom:10px;flex-wrap:wrap;gap:8px">
+        <div class="serif" style="font-size:17px;font-weight:500;display:flex;align-items:center;gap:10px"><span style="font-size:18px">${m.emoji}</span>${m.name}</div>
+        <div class="mono" style="font-size:11px;color:var(--mu);display:flex;gap:10px">
+          <span style="padding:2px 7px;background:var(--input);border-radius:99px;border:1px solid var(--bd)">${items.length} item${items.length===1?"":"s"}</span>
+          <span>${Math.round(mt.cal)} kcal</span><span>·</span><span>P${Math.round(mt.p)}</span>
+        </div>
+      </div>
+      ${rows}
+    </div>`;
+  }).join("");
+
+  return `<div class="grid12">
+    <div class="sp4">
+      <div class="card" style="background:linear-gradient(135deg,var(--card),var(--bgE));position:relative;overflow:hidden">
+        <div class="card-eyebrow">— Daily Health Score</div>
+        <div style="width:160px;height:160px;margin:8px auto;position:relative">
+          <svg viewBox="0 0 160 160" style="width:100%;height:100%;transform:rotate(-90deg)">
+            <circle cx="80" cy="80" r="70" fill="none" stroke="${C.bd}" stroke-width="10"/>
+            <circle cx="80" cy="80" r="70" fill="none" stroke="${sCol}" stroke-width="10"
+              stroke-linecap="round" stroke-dasharray="${sCirc}" stroke-dashoffset="${sOffset}"
+              style="transition:stroke-dashoffset 1s, stroke 0.3s"/>
+          </svg>
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center">
+            <div class="serif" style="font-weight:400;font-size:48px;line-height:1;letter-spacing:-0.03em">${d.score.overall ?? "—"}</div>
+            <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--mu);margin-top:4px;font-weight:500">of 100</div>
+          </div>
+        </div>
+        <div style="text-align:center">
+          <span style="display:inline-block;padding:3px 10px;border-radius:99px;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-top:8px;background:${grade.bg};color:${grade.c}">${grade.text}</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px;padding-top:18px;border-top:1px dashed var(--bd)">
+          ${[["Macros",d.score.macros],["Hydro",d.score.hydro],["Micros",d.score.micros]].map(([l,v])=>`
+            <div style="text-align:center">
+              <div class="serif" style="font-weight:500;font-size:22px">${v ?? "—"}</div>
+              <div style="font-size:10px;color:var(--mu);letter-spacing:0.1em;text-transform:uppercase;margin-top:2px;font-weight:500">${l}</div>
+            </div>`).join("")}
+        </div>
+      </div>
+    </div>
+
+    <div class="sp8">
+      <div class="card">
+        <div class="card-eyebrow">— Today's Energy &amp; Macros</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+          ${macroRingHtml("kcal", d.totals.cal, d.macros?.cal||0, C.saffron, "")}
+          ${macroRingHtml("Protein", Math.round(d.totals.protein), d.macros?.protein||0, C.moss, "g")}
+          ${macroRingHtml("Carbs", Math.round(d.totals.carbs), d.macros?.carbs||0, C.ochre, "g")}
+          ${macroRingHtml("Fat", Math.round(d.totals.fat), d.macros?.fat||0, C.clay, "g")}
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:20px">
+          ${statHtml("Remaining", d.macros?Math.max(0,d.macros.cal-d.totals.cal):"—", "kcal", d.macros?`of ${d.macros.cal} target`:"Set weight")}
+          ${statHtml("Fiber", d.totals.fiber.toFixed(0), "g", `${Math.round(d.totals.fiber/30*100)}% of 30g`)}
+          ${statHtml("Sugar", d.totals.sugar.toFixed(0), "g", d.totals.sugar>50?"⚠ over 50g":"&lt; 50g ok", d.totals.sugar>50?C.clay:null)}
+          ${statHtml("Sodium", d.totals.sodium, "mg", d.totals.sodium>2300?"⚠ over limit":"&lt; 2300mg ok", d.totals.sodium>2300?C.clay:null)}
+        </div>
+      </div>
+    </div>
+
+    <div class="sp12">
+      <div style="background:linear-gradient(135deg,rgba(212,165,116,0.08),rgba(127,160,92,0.04));border:1px solid rgba(212,165,116,0.2);border-radius:14px;padding:18px 20px">
+        <div class="serif" style="font-style:italic;font-weight:500;font-size:17px;margin-bottom:8px;display:flex;align-items:center;gap:8px"><span>✦</span>${advice.title}</div>
+        <div style="font-size:13px;line-height:1.6;color:var(--dim)">${advice.text}</div>
+      </div>
+    </div>
+
+    <div class="sp12">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+          <div>
+            <div class="sec-title">Log Food or Drink</div>
+            <div style="font-size:12px;color:var(--mu)">— Type anything. Gemini identifies &amp; analyzes it.</div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            ${MEALS.map(m => pillHtml(`${m.emoji} ${m.name}`, state.currentMeal===m.key, `setMeal('${m.key}')`)).join("")}
+          </div>
+        </div>
+
+        <div class="keyrow">
+          <label class="lbl" for="apiKeyInput" style="color:var(--indigo)">🔑 Gemini API Key ${keyMissing ? '<span style="color:var(--clay)">— required</span>' : '<span style="color:var(--moss)">— saved ✓</span>'}</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <input id="apiKeyInput" type="password" class="inp" style="flex:1 1 240px;min-width:200px" placeholder="Paste your Gemini API key" value="${esc(state.apiKey)}" oninput="onApiKeyInput(this.value)" autocomplete="off">
+            <button id="keyToggleBtn" class="btn" onclick="toggleKeyVisibility()">👁 Show</button>
+          </div>
+          <div style="font-size:11px;color:var(--mu);margin-top:8px;line-height:1.5">
+            Get a free key at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="color:var(--indigo)">aistudio.google.com/apikey</a>. Stored only in this browser — never sent anywhere except Google's API.
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <input id="foodDesc" type="text" class="inp" placeholder='e.g. "2 boiled eggs", "rajma chawal 1 bowl", "Starbucks venti latte"' onkeydown="if(event.key==='Enter'&&!state.loading)addFood()">
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <input id="foodGrams" type="number" class="inp" placeholder="grams (optional)" style="flex:1 1 150px;min-width:150px">
+            <button id="askBtn" class="btn btn-primary" style="flex:0 0 auto" onclick="addFood()">✦ Analyze with Gemini</button>
+          </div>
+        </div>
+        <div id="loadingMsg" style="font-size:11px;color:var(--mu);font-style:italic;margin-top:8px;display:none"></div>
+        <div style="font-size:11px;color:var(--mu);margin-top:10px;font-style:italic">
+          Tip: vague ("big plate of pasta") or specific ("150g raw oats with almond milk") — Gemini handles both.
+        </div>
+      </div>
+    </div>
+
+    <div class="sp12">
+      <div class="card">
+        <div class="sec-title">Today's Meals</div>
+        <div class="sec-sub">— ${Object.values(d.today.meals).flat().length} items logged</div>
+        ${mealsHtml}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ════════ TAB: PROFILE ════════ */
+function renderTargetsInner(){
+  const d = derived();
+  const goalDetail = state.goal==="shred-agg"?"Agg. cut · -750" : state.goal==="shred"?"Fat loss · -400" : state.goal==="maintain"?"Maintenance" : state.goal==="gain"?"Lean gain · +250" : state.goal==="bulk"?"Bulk · +500" : "";
+  return `
+    <div class="sec-title">Computed Targets</div>
+    <div class="sec-sub">— Mifflin-St Jeor × activity × goal</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:18px">
+      ${statHtml("BMI", d.bmi||"—", "", d.bmiC.l, d.bmiC.c)}
+      ${statHtml("BMR", d.bmr||"—", "kcal", "Resting metabolism")}
+      ${statHtml("TDEE", d.tdee||"—", "kcal", "Total daily energy")}
+      ${statHtml("Cal Target", d.calTarget||"—", "kcal", goalDetail)}
+    </div>
+    <div class="mono" style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--mu);margin-bottom:10px;font-weight:500">Daily Macros</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px">
+      ${statHtml("Protein", d.macros?.protein||"—", "g", d.kg&&d.macros?`${(d.macros.protein/d.kg).toFixed(1)} g/kg`:"", C.moss)}
+      ${statHtml("Carbs", d.macros?.carbs||"—", "g", d.macros?`${Math.round(d.macros.carbs*4/d.macros.cal*100)}%`:"", C.ochre)}
+      ${statHtml("Fat", d.macros?.fat||"—", "g", d.kg&&d.macros?`${(d.macros.fat/d.kg).toFixed(1)} g/kg`:"", C.clay)}
+    </div>
+    <div class="mono" style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--mu);margin-bottom:10px;font-weight:500">Hydration Target</div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
+      ${statHtml("Baseline", d.waterT||"—", "ml", "35 ml × kg")}
+      ${statHtml("Active", d.waterTA||"—", "ml", "45 ml × kg + 500/hr")}
+    </div>`;
+}
+function renderProfile(){
+  const actDesc = {1.2:"Little to no exercise",1.375:"Light exercise 1-3 days/week",1.55:"Moderate exercise 3-5 days/week",1.725:"Heavy exercise 6-7 days/week",1.9:"Professional athlete / physical job"}[state.activity]||"";
+  return `<div class="grid12">
+    <div class="sp6">
+      <div class="card">
+        <div class="sec-title">Body Metrics</div>
+        <div class="sec-sub">— Your targets adapt to these</div>
+
+        <div style="margin-bottom:16px">
+          <label class="lbl" for="pWeight">Weight</label>
+          <div style="display:grid;grid-template-columns:1fr 90px;gap:10px">
+            <input id="pWeight" type="number" class="inp" placeholder="70" step="0.1" value="${esc(state.weight)}" oninput="onProfileInput('weight', this.value)">
+            <select class="inp" style="cursor:pointer" onchange="onProfileInput('unit', this.value)">
+              <option value="kg"${state.unit==="kg"?" selected":""}>kg</option>
+              <option value="lb"${state.unit==="lb"?" selected":""}>lb</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-bottom:16px">
+          <label class="lbl" for="pHeight">Height (cm)</label>
+          <input id="pHeight" type="number" class="inp" placeholder="175" value="${esc(state.height)}" oninput="onProfileInput('height', this.value)">
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+          <div>
+            <label class="lbl" for="pAge">Age</label>
+            <input id="pAge" type="number" class="inp" placeholder="28" value="${esc(state.age)}" oninput="onProfileInput('age', this.value)">
+          </div>
+          <div>
+            <label class="lbl">Biological Sex</label>
+            <select class="inp" style="cursor:pointer" onchange="onProfileInput('sex', this.value)">
+              <option value="m"${state.sex==="m"?" selected":""}>Male</option>
+              <option value="f"${state.sex==="f"?" selected":""}>Female</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-bottom:16px">
+          <label class="lbl">Activity Level</label>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            ${[[1.2,"Sedentary"],[1.375,"Light"],[1.55,"Moderate"],[1.725,"Active"],[1.9,"Athlete"]].map(([v,l]) => pillHtml(l, state.activity===v, `setActivity(${v})`)).join("")}
+          </div>
+          <div style="font-size:11px;color:var(--mu);margin-top:8px">${actDesc}</div>
+        </div>
+
+        <div>
+          <label class="lbl">Goal</label>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            ${pillHtml("🔥 Aggressive Cut", state.goal==="shred-agg", "setGoal('shred-agg')", C.rust)}
+            ${pillHtml("🔥 Fat Loss", state.goal==="shred", "setGoal('shred')", C.indigo)}
+            ${pillHtml("⚖️ Maintain", state.goal==="maintain", "setGoal('maintain')", C.ochre)}
+            ${pillHtml("💪 Lean Gain", state.goal==="gain", "setGoal('gain')", C.moss)}
+            ${pillHtml("💪 Bulk", state.goal==="bulk", "setGoal('bulk')", C.gold)}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sp6">
+      <div class="card" id="targetsPanel">${renderTargetsInner()}</div>
+    </div>
+  </div>`;
+}
+
+/* ════════ TAB: MICROS ════════ */
+function renderMicros(d){
+  const insights = generateInsights(d.today, d.totals, d.macros);
+  const cells = Object.entries(RDA).map(([k,m]) => {
+    const v = k==="fib" ? d.totals.fiber : (d.totals.micros[k]||0);
+    const pct = Math.min((v/m.rda)*100,100);
+    const done = pct>=100;
+    const col = done?C.moss : pct>=60?C.gold : pct>=30?C.ochre : C.mu;
+    return `<div style="padding:12px;background:var(--input);border-radius:8px;border:${done?"1px solid rgba(127,160,92,0.3)":"1px solid transparent"};position:relative">
+      ${done?`<div style="position:absolute;top:8px;right:10px;color:var(--moss);font-size:14px">✓</div>`:""}
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+        <div style="font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px">${m.e} ${m.label}</div>
+        <div class="mono" style="font-size:11px;font-weight:600;color:${col}">${Math.round(pct)}%</div>
+      </div>
+      <div style="height:3px;background:var(--bd);border-radius:99px;overflow:hidden;margin-bottom:6px">
+        <div style="height:100%;width:${pct}%;background:${col};transition:width 0.8s"></div>
+      </div>
+      <div class="mono" style="font-size:10px;color:var(--mu)">${v.toFixed(1)}${m.unit} / ${m.rda}${m.unit}</div>
+    </div>`;
+  }).join("");
+
+  const insHtml = insights.length===0
+    ? `<div style="text-align:center;padding:36px 20px;color:var(--mu)"><div style="font-size:38px;opacity:0.4;margin-bottom:10px">🔍</div><div style="font-size:13px">Log foods to see insights</div></div>`
+    : insights.map(i => `<div class="insight ${i.type}"><div style="font-size:16px;flex-shrink:0">${i.icon}</div><div>${i.text}</div></div>`).join("");
+
+  return `<div style="display:flex;flex-direction:column;gap:16px;animation:fi 0.4s">
+    <div class="card">
+      <div class="sec-title">Micronutrient Dashboard</div>
+      <div class="sec-sub">— Intake vs RDA · updates as you log</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px">${cells}</div>
+    </div>
+    <div class="card">
+      <div class="sec-title">Food Insights</div>
+      <div class="sec-sub">— Auto-detected from today's logs</div>
+      ${insHtml}
+    </div>
+  </div>`;
+}
+
+/* ════════ TAB: HYDRATION ════════ */
+function renderHydration(d){
+  const entries = d.today.water.length===0
+    ? `<div style="font-size:12px;color:var(--mu);font-style:italic">No manual entries yet</div>`
+    : [...d.today.water].reverse().map(w => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(107,127,181,0.06);border:1px solid rgba(107,127,181,0.12);border-radius:8px;font-size:12px;margin-bottom:5px">
+        <div style="display:flex;align-items:center;gap:8px;min-width:0">
+          <span>💧</span>
+          <b class="mono" style="color:var(--indigo)">${w.ml}ml</b>
+          <span style="color:var(--mu);overflow:hidden;text-overflow:ellipsis">${esc(w.label)}</span>
+          <span style="color:var(--mu);font-size:10px;flex-shrink:0">· ${esc(w.time)}</span>
+        </div>
+        <div style="display:flex;gap:4px;flex-shrink:0">
+          <button class="btn-ghost" style="font-size:11px" onclick="editWater(${w.id})">✎</button>
+          <button class="btn-ghost" style="font-size:11px" onclick="deleteWater(${w.id})">✕</button>
+        </div>
+      </div>`).join("");
+
+  const caffWarn = d.totals.caff>=400
+    ? `<div class="insight alert" style="margin-bottom:10px"><div>⚠️ You've hit the <b>400mg limit</b>. No more caffeine today.</div></div>`
+    : (d.totals.caff>=300
+      ? `<div class="insight warn" style="margin-bottom:10px"><div>⚡ Nearing limit — <b>${400-d.totals.caff}mg remaining</b>.</div></div>`
+      : "");
+
+  return `<div class="grid12">
+    <div class="sp8">
+      <div class="card">
+        <div class="sec-title">Hydration Status</div>
+        <div class="sec-sub">— Water + beverage contributions (science-weighted)</div>
+        ${barHtml("Hydration Progress", d.totals.water, d.waterT||0, "ml", C.indigo)}
+        <div style="font-size:11px;color:var(--dim);margin-top:-6px;margin-bottom:14px">
+          ${!d.waterT ? "Set weight in profile for target" : d.totals.water>=d.waterT ? "🎯 Daily hydration goal achieved!" : `${d.waterT-d.totals.water}ml to go`}
+        </div>
+        <div class="mono" style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--mu);margin-bottom:10px;font-weight:500">Quick Add Water</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px">
+          <input id="waterInput" type="number" class="inp" placeholder="ml" style="width:110px" onkeydown="if(event.key==='Enter')addWaterFromInput()">
+          <button class="btn btn-primary" onclick="addWaterFromInput()">+ Add</button>
+          ${[[150,"☕"],[250,"🥛"],[500,"🍶"],[750,"💧"],[1000,"🫗"]].map(([ml,ic]) => `<button style="padding:8px 12px;border-radius:99px;border:1px solid rgba(107,127,181,0.25);background:rgba(107,127,181,0.08);color:var(--indigo);cursor:pointer;font-family:inherit;font-size:12px;font-weight:600" onclick="addWater(${ml}, 'quick ${ic}')">${ic} ${ml}</button>`).join("")}
+        </div>
+        <div class="mono" style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--mu);margin-bottom:10px;font-weight:500">Today's Entries</div>
+        ${entries}
+      </div>
+    </div>
+
+    <div class="sp4">
+      <div class="card">
+        <div class="sec-title">Caffeine</div>
+        <div class="sec-sub">— vs 400mg safe daily limit</div>
+        ${statHtml("Today", d.totals.caff, "mg", `${Math.max(0,400-d.totals.caff)}mg remaining`, d.totals.caff>=400?C.rust:d.totals.caff>=300?C.clay:C.amethyst)}
+        <div style="position:relative;height:28px;background:var(--input);border-radius:99px;overflow:hidden;margin:14px 0">
+          <div style="height:100%;width:${Math.min(d.totals.caff/400*100,100)}%;background:linear-gradient(90deg,var(--amethyst),var(--rust));transition:width 0.8s;border-radius:99px"></div>
+        </div>
+        ${caffWarn}
+        <div class="mono" style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--mu);margin-bottom:10px;font-weight:500">Hydration Coefficients</div>
+        <div class="mono" style="font-size:11px;color:var(--dim);line-height:1.8">
+          <div>water → 100%</div><div>tea / green tea → 95%</div><div>coffee → 95%</div>
+          <div>milk → 90%</div><div>juice → 88%</div><div>soda → 85%</div>
+          <div>energy drink → 80%</div><div>alcohol → 0% (diuretic)</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ════════ TAB: TRENDS ════════ */
+function renderTrends(d){
+  const keys7 = last7Days();
+  const scoreVals = keys7.map(k => state.days[k] ? computeScore(totalsForDay(state.days[k]), d.macros, d.waterT).overall : null);
+  const calVals = keys7.map(k => state.days[k] ? totalsForDay(state.days[k]).cal : null);
+  const protVals = keys7.map(k => state.days[k] ? Math.round(totalsForDay(state.days[k]).protein) : null);
+  const calMax = d.calTarget ? Math.max(d.calTarget*1.3, ...keys7.map(k => state.days[k]?totalsForDay(state.days[k]).cal:0))*1.1 : 3000;
+  const protMax = d.macros?.protein ? d.macros.protein*1.3 : 200;
+
+  const loggedKeys = Object.keys(state.days).filter(k => Object.values(state.days[k].meals).some(m => m.length>0) || state.days[k].water.length>0).sort((a,b)=>b.localeCompare(a));
+  const loggedHtml = loggedKeys.length===0
+    ? `<div style="text-align:center;padding:30px 20px;color:var(--mu)">No logged days</div>`
+    : loggedKeys.slice(0,30).map(k => {
+        const t = totalsForDay(state.days[k]);
+        const s = computeScore(t, d.macros, d.waterT).overall;
+        const col = s===null?C.mu : s>=85?C.moss : s>=70?C.gold : s>=50?C.ochre : C.clay;
+        const ds = new Date(k).toLocaleDateString("en-US",{month:"short",day:"numeric",weekday:"short"});
+        return `<div style="padding:10px 14px;background:var(--input);border-radius:8px;margin-bottom:6px;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;font-size:13px">
+          <div class="mono" style="font-size:11px;color:var(--dim);min-width:90px">${ds}</div>
+          <div>
+            <div class="mono" style="font-size:11px;color:var(--mu)">${t.cal}kcal · P${Math.round(t.protein)} · W${t.water}ml</div>
+            <div style="height:4px;background:var(--bd);border-radius:99px;overflow:hidden;margin-top:5px">
+              <div style="height:100%;width:${s||0}%;background:${col};border-radius:99px"></div>
+            </div>
+          </div>
+          <div class="serif" style="font-size:18px;font-weight:500;color:${col}">${s ?? "—"}</div>
+        </div>`;
+      }).join("");
+
+  return `<div style="display:flex;flex-direction:column;gap:16px;animation:fi 0.4s">
+    <div class="card">
+      <div class="sec-title">7-Day Health Score</div>
+      <div class="sec-sub">— Save &amp; restore to carry history across sessions</div>
+      ${trendChartSvg(keys7, scoreVals, 100, "", C.moss)}
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px">
+      <div class="card">
+        <div class="sec-title">Calorie Adherence</div>
+        <div class="sec-sub">— 7-day intake vs target</div>
+        ${trendChartSvg(keys7, calVals, calMax, "kcal", C.saffron, d.calTarget)}
+      </div>
+      <div class="card">
+        <div class="sec-title">Protein Consistency</div>
+        <div class="sec-sub">— Critical for body composition</div>
+        ${trendChartSvg(keys7, protVals, protMax, "g", C.moss, d.macros?.protein)}
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec-title">Logged Days</div>
+      <div class="sec-sub">— All days with data</div>
+      ${loggedHtml}
+    </div>
+  </div>`;
+}
+
+/* ════════ MAIN RENDER ════════ */
+const TABS = [{k:"today",l:"◉ Today"},{k:"profile",l:"◐ Profile"},{k:"micros",l:"◔ Micros"},{k:"hydration",l:"◕ Hydration"},{k:"trends",l:"◑ Trends"}];
+
+function render(){
+  // preserve in-progress inputs across re-render
+  const keep = {};
+  ["foodDesc","foodGrams","waterInput"].forEach(id => { const el=document.getElementById(id); if(el) keep[id]=el.value; });
+
+  document.getElementById("tabbar").innerHTML = TABS.map(t =>
+    `<button class="tabbtn${state.tab===t.k?" on":""}" onclick="setTab('${t.k}')">${t.l}</button>`).join("");
+
+  const d = derived();
+  const content = document.getElementById("content");
+  if(state.tab==="today") content.innerHTML = renderToday(d);
+  else if(state.tab==="profile") content.innerHTML = renderProfile();
+  else if(state.tab==="micros") content.innerHTML = renderMicros(d);
+  else if(state.tab==="hydration") content.innerHTML = renderHydration(d);
+  else if(state.tab==="trends") content.innerHTML = renderTrends(d);
+
+  Object.entries(keep).forEach(([id,v]) => { const el=document.getElementById(id); if(el && !el.value) el.value=v; });
+  renderLogControls();
+  updateHeaderStatus();
+}
+
+loadApiKey();
+render();
+</script>
+</body>
+</html>
